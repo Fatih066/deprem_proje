@@ -10,14 +10,17 @@ import com.example.deprem_proje.R;
 import com.example.deprem_proje.Yetkili.Location.GetLocation;
 
 import com.google.android.gms.maps.GoogleMap;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.SupportMapFragment;
 import  com.google.android.gms.maps.OnMapReadyCallback;
 
 public class Yetkili extends AppCompatActivity implements OnMapReadyCallback {
 
     private FireStore fireStore ;
+    private  GoogleMap map;
 
+    private  GetLocation getLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,12 +29,23 @@ public class Yetkili extends AppCompatActivity implements OnMapReadyCallback {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         fireStore = new FireStore();
+        getLocation = new GetLocation();
+
 
     }
 
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+        getLocation.setMarkers(markerOptions -> {
+            for (MarkerOptions markerOption : markerOptions) {
+                map.addMarker(markerOption);
+            }
+        });
+
+        map.setOnInfoWindowClickListener(marker -> {
+        });
 
     }
 }

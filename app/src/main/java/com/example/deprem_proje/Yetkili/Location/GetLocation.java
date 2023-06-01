@@ -1,14 +1,14 @@
 package com.example.deprem_proje.Yetkili.Location;
 
-import android.location.Location;
-
 import com.example.deprem_proje.Firabase.FireStore;
-import com.example.deprem_proje.Yetkili.Yetkili;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class GetLocation {
     private FireStore fireStore = new FireStore();
@@ -25,26 +25,45 @@ public class GetLocation {
             callback.onDataReceived(userUids); // Veri alındığında geri çağırma mekanizması ile devam edilir
         });
     }
-    public void getLocation(DataLocationCallback callback){
-        List<Location> locations = new ArrayList<>();
+
+    public void setMarkers(DataLocationCallback callback){
+        List<MarkerOptions> markerOptions = new ArrayList<>();
         getUids(uids -> {
+            int uidCount = uids.size();
+            AtomicInteger counter = new AtomicInteger(0);
             for (String uid:uids) {
                 firebaseFirestore.collection("Users").document(uid).collection("Konumum")
                         .document("Konumum").get()
                         .addOnSuccessListener(documentSnapshot -> {
-                            double lat = Double.parseDouble(documentSnapshot.getData().get("latitude").toString());
-                            double lon = Double.parseDouble(documentSnapshot.getData().get("longitude").toString());
-                            Location location = new Location("");
-                            location.setLatitude(lat);
-                            location.setLongitude(lon);
-                            locations.add(location);
-                            callback.onDataReceived(locations);
+                            boolean isSafe = Boolean.parseBoolean(documentSnapshot.getData().get("isSafe").toString());
+                            if (!isSafe){
+                                double lat = Double.parseDouble(documentSnapshot.getData().get("latitude").toString());
+                                double lon = Double.parseDouble(documentSnapshot.getData().get("longitude").toString());
+                                MarkerOptions markerOption = new MarkerOptions();
+                                markerOption.position(new LatLng(lat, lon)).snippet(uid);
+                                firebaseFirestore.collection("Users").document(uid).get().addOnSuccessListener(snapshot -> {
+                                  String  name = snapshot.getData().get("name").toString();
+                                    markerOption.title(name);
+                                    markerOptions.add(markerOption);
+                                    markerOptions.add(markerOption);
+                                    int count = counter.incrementAndGet();
+                                    if (count == uidCount) {
+                                        callback.onDataReceived(markerOptions);
+                                    }
+                                });
+                            }
+                            else{
+                                int count = counter.incrementAndGet();
+                                if (count == uidCount)
+                                    callback.onDataReceived(markerOptions);
+                            }
                         });
             }
+
         });
     }
     public interface DataLocationCallback {
-        void onDataReceived(List<Location> locations);
+        void onDataReceived(List<MarkerOptions> markerOptions);
     }
     public interface DataUidCallback {
         void onDataReceived(List<String> uids);

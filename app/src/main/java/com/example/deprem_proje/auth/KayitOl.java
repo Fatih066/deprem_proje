@@ -65,7 +65,7 @@ public class KayitOl extends AppCompatActivity {
     }
 
     private  void setUserInfos(String userUid){
-        fireStore.setUserInfos(userUid,nameEditText.getText().toString(), phoneEditText.getText().toString(),emailEditText.getText().toString(), passwordEditText.getText().toString(), kanGrubuEditText.getText().toString(), false);
+        fireStore.setUserInfos(userUid,nameEditText.getText().toString(), phoneEditText.getText().toString(),emailEditText.getText().toString(), passwordEditText.getText().toString(), kanGrubuEditText.getText().toString(), true);
     }
     private  void onAuthStateChanged(Bundle options){
         FirebaseAuth.AuthStateListener mAuthStateListener = auth.mAuthStateListener(KayitOl.this, Kullanici.class, options);
