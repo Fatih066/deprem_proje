@@ -69,19 +69,19 @@ public class Kullanici extends AppCompatActivity {
 
     public void guvendeyim(View view) {
        isSafe = true;
-       fireStore.removeUserLocation(auth.getUser().getUid(), isSafe, "asd");
+       fireStore.removeUserLocation(auth.getUser().getUid(), isSafe, "ismailabi");
     }
 
     public void guvendeDegilim(View view){
         isSafe = false;
-        getLocation.getLocation(auth.getUser().getUid(), isSafe);
+        getLocation.getLocation(auth.getUser().getUid(), isSafe,"asd");
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 200 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            getLocation.getLocation(auth.getUser().getUid(), isSafe);
+            getLocation.getLocation(auth.getUser().getUid(), isSafe,"sad");
         }
     }
 

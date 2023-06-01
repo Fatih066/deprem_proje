@@ -39,21 +39,21 @@ public class GetLocation extends AppCompatActivity implements LocationListener {
         fireStore = new FireStore();
         locationProviderClient = LocationServices.getFusedLocationProviderClient(context);
     }
-    public void getLocation(String userUid, boolean isSafe){
+    public void getLocation(String userUid, boolean isSafe, String tarih){
         if(ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            sendLocation(userUid, isSafe);
+            sendLocation(userUid, isSafe, tarih);
         }else{
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 200);
         }
     }
     @SuppressLint("MissingPermission")
-    private void sendLocation(String userUid, boolean isSafe) {
+    private void sendLocation(String userUid, boolean isSafe, String tarih) {
         LocationManager manager = (LocationManager)  context.getSystemService(Context.LOCATION_SERVICE);
         manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, this);
         android.location.Location location = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if (location != null){
             System.out.println(location.getLatitude());
-            fireStore.sendUserLocation(userUid, location, isSafe, "AAA");
+            fireStore.sendUserLocation(userUid, location, isSafe, tarih);
         }else{
             System.out.println("adsdasd");
         }
