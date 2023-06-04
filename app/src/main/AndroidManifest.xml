@@ -4,6 +4,9 @@
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_VENDOR_PROPERTIES" />
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -16,13 +19,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Deprem_proje"
         tools:targetApi="31">
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBRuk2tjie_KZW4077v63vR6RwACPwaN_U"
+         />
+
         <activity
             android:name=".Yetkili.UserInfo.UserInfoActivity"
             android:exported="false" />
 
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBRuk2tjie_KZW4077v63vR6RwACPwaN_U" />
 
         <activity
             android:name=".Yetkili.Yetkili"

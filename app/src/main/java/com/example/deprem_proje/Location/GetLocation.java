@@ -48,14 +48,13 @@ public class GetLocation extends AppCompatActivity implements LocationListener {
     }
     @SuppressLint("MissingPermission")
     private void sendLocation(String userUid, boolean isSafe, String tarih) {
+
         LocationManager manager = (LocationManager)  context.getSystemService(Context.LOCATION_SERVICE);
         manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, this);
-        android.location.Location location = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        Location location = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if (location != null){
-            System.out.println(location.getLatitude());
             fireStore.sendUserLocation(userUid, location, isSafe, tarih);
-        }else{
-            System.out.println("adsdasd");
+        }else {
         }
     }
 

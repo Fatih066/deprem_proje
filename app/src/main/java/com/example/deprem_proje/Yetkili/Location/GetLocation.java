@@ -3,8 +3,12 @@ package com.example.deprem_proje.Yetkili.Location;
 import com.example.deprem_proje.Firabase.FireStore;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +35,7 @@ public class GetLocation {
         getUids(uids -> {
             int uidCount = uids.size();
             AtomicInteger counter = new AtomicInteger(0);
+
             for (String uid:uids) {
                 firebaseFirestore.collection("Users").document(uid).collection("Konumum")
                         .document("Konumum").get()
@@ -62,6 +67,59 @@ public class GetLocation {
 
         });
     }
+    public void deneme(DataLocationCallback callback) {
+        List<MarkerOptions> markerOptions = new ArrayList<>();
+        getUids(uids -> {
+            int uidCount = uids.size();
+            AtomicInteger counter = new AtomicInteger(0);
+
+            for (String uid : uids) {
+                firebaseFirestore.collection("Users")
+                        .document(uid)
+                        .collection("Konumum")
+                        .document("Konumum")
+                        .addSnapshotListener((documentSnapshot, error) -> {
+                            if (error != null) {
+                                // Hata durumunda yapılması gereken işlemler
+                                return;
+                            }
+
+                            if (documentSnapshot != null && documentSnapshot.exists()) {
+                                boolean isSafe = documentSnapshot.getBoolean("isSafe");
+                                if (!isSafe) {
+                                    double lat = documentSnapshot.getDouble("latitude");
+                                    double lon = documentSnapshot.getDouble("longitude");
+                                    MarkerOptions markerOption = new MarkerOptions();
+                                    markerOption.position(new LatLng(lat, lon)).snippet(uid);
+
+                                    firebaseFirestore.collection("Users")
+                                            .document(uid)
+                                            .get()
+                                            .addOnSuccessListener(snapshot -> {
+                                                String name = snapshot.getString("name");
+                                                markerOption.title(name);
+                                                markerOptions.add(markerOption);
+
+                                                int count = counter.incrementAndGet();
+                                                if (count == uidCount) {
+                                                    callback.onDataReceived(markerOptions);
+                                                }
+                                            });
+                                } else {
+                                    int count = counter.incrementAndGet();
+                                    if (count == uidCount) {
+                                        callback.onDataReceived(markerOptions);
+                                    }
+                                }
+                            }
+                        });
+            }
+        });
+    }
+
+
+
+
     public interface DataLocationCallback {
         void onDataReceived(List<MarkerOptions> markerOptions);
     }

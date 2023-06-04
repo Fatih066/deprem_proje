@@ -15,7 +15,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class FireStore {
     FirebaseFirestore fireStore = FirebaseFirestore.getInstance();
@@ -24,7 +23,7 @@ public class FireStore {
 
 
     public void  setUserInfos(String userUid, String name, String phone, String email, String password, String kanGrubu, boolean isUser){
-        final Map<String, Object> userInfos = new HashMap<>();
+        final java.util.Map<String, Object> userInfos = new HashMap<>();
         userInfos.put("name", name);
         userInfos.put("phone", phone);
         userInfos.put("email", email);
@@ -34,7 +33,7 @@ public class FireStore {
         fireStore.collection( isUser == true ? "Users" : "Yetkili").document(userUid).set(userInfos);
     }
     public  void sendUserLocation(String userUid, Location location, boolean isSafe,String tarih){
-        final Map<String, Object> userLocationInfos = new HashMap<>();
+        final java.util.Map<String, Object> userLocationInfos = new HashMap<>();
         userLocationInfos.put("latitude", location.getLatitude());
         userLocationInfos.put("longitude", location.getLongitude());
         userLocationInfos.put("tarih", tarih);
@@ -43,7 +42,7 @@ public class FireStore {
     }
 
     public void removeUserLocation(String userUid,boolean isSafe,String tarih){
-        final Map<String, Object> userLocationInfos = new HashMap<>();
+        final java.util.Map<String, Object> userLocationInfos = new HashMap<>();
         userLocationInfos.put("latitude", null);
         userLocationInfos.put("longitude", null);
         userLocationInfos.put("tarih", tarih);
@@ -61,6 +60,7 @@ public class FireStore {
              userUids.add(documentId);
 
          }
+
          if (!userUids.isEmpty()){
              for (String uid:userUids) {
                  if(uid.equals(userId)){
@@ -68,8 +68,9 @@ public class FireStore {
                      FirebaseAuth.AuthStateListener mAuthStateListener = auth.mAuthStateListener(context,  Kullanici.class , options);
                      mAuthStateListener.onAuthStateChanged(auth._firebaseAuth);
                  }else{
-                     return;
+                     //return;
                  }
+
              }
          }
       });
@@ -87,7 +88,7 @@ public class FireStore {
                      FirebaseAuth.AuthStateListener mAuthStateListener = auth.mAuthStateListener(context,  Yetkili.class , options);
                      mAuthStateListener.onAuthStateChanged(auth._firebaseAuth);
                  }else{
-                     return;
+                     //return;
                  }
              }
          }

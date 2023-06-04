@@ -2,41 +2,56 @@ package com.example.deprem_proje.Kullanici;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.example.deprem_proje.Firabase.FireStore;
 import com.example.deprem_proje.Kullanici.Fragments.ChatFragment;
 import com.example.deprem_proje.Kullanici.Fragments.HomeFragment;
 import com.example.deprem_proje.Location.GetLocation;
+import com.example.deprem_proje.MainActivity;
 import com.example.deprem_proje.R;
 import com.example.deprem_proje.Firabase.Auth;
+import com.example.deprem_proje.Yetkili.UserInfo.UserInfoActivity;
 import com.example.deprem_proje.databinding.ActivityKullaniciBinding;
+import com.example.deprem_proje.publicFunctions.PublicFunctions;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
 
-public class Kullanici extends AppCompatActivity {
+public class Kullanici extends AppCompatActivity    {
 
     private ActivityKullaniciBinding binding;
     private Auth auth;
     private  boolean isSafe;
     private GetLocation getLocation;
     private FireStore fireStore;
+    private PublicFunctions publicFunctions = new PublicFunctions();
+    private String date;
+    private Toolbar toolbar;
+    private  Bundle options;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityKullaniciBinding.inflate(getLayoutInflater());
+
         setContentView(binding.getRoot());
         replaceFragment(new HomeFragment());
-        auth = new Auth();
-        fireStore = new FireStore();
-        getLocation = new GetLocation(this, this);
-        binding.bottomNavigationView.setBackground(null);
-        binding.bottomNavigationView.setOnItemSelectedListener(item -> {
+
+        binding.userBottomNavigationView.setBackground(null);
+        binding.userBottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.home) {
                 replaceFragment(new HomeFragment());
@@ -45,9 +60,22 @@ public class Kullanici extends AppCompatActivity {
             }
             return true;
         });
+
+        setViews();
+        options = savedInstanceState;
+
+    }
+
+
+
+    private void setViews(){
+
+        auth = new Auth();
+        toolbar = findViewById(R.id.appBar);
+        setSupportActionBar(toolbar);
+        fireStore = new FireStore();
+        getLocation = new GetLocation(this, this);
         isSafe = true;
-
-
 
     }
 
@@ -63,27 +91,49 @@ public class Kullanici extends AppCompatActivity {
     private void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame_layout, fragment);
+        fragmentTransaction.replace(R.id.user_frame_layout, fragment);
         fragmentTransaction.commit();
     }
 
     public void guvendeyim(View view) {
-       isSafe = true;
-       fireStore.removeUserLocation(auth.getUser().getUid(), isSafe, "ismailabi");
+        date = publicFunctions.getCurrenDate();
+
+        isSafe = true;
+       fireStore.removeUserLocation(auth.getUser().getUid(), isSafe, date);
     }
 
     public void guvendeDegilim(View view){
+        date = publicFunctions.getCurrenDate();
+
         isSafe = false;
-        getLocation.getLocation(auth.getUser().getUid(), isSafe,"asd");
+        getLocation.getLocation(auth.getUser().getUid(), isSafe,date);
+
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 200 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            getLocation.getLocation(auth.getUser().getUid(), isSafe,"sad");
+            date = publicFunctions.getCurrenDate();
+            getLocation.getLocation(auth.getUser().getUid(), isSafe,date);
         }
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.appbar_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.signOut) {
+            signOut();
+            onAuthStateChanged(options);
+        }
+        return true;
+    }
+
 
 
 }

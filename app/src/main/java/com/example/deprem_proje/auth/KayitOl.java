@@ -1,11 +1,14 @@
 package com.example.deprem_proje.auth;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Switch;
 
 import com.example.deprem_proje.Firabase.Auth;
 import com.example.deprem_proje.Firabase.FireStore;
@@ -21,6 +24,9 @@ public class KayitOl extends AppCompatActivity {
     private FireStore fireStore;
 
     private Auth auth;
+    private Switch isUserSwitch;
+    private boolean isUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,8 +38,10 @@ public class KayitOl extends AppCompatActivity {
         nameEditText = findViewById(R.id.editTextKullaniciAdi);
         phoneEditText = findViewById(R.id.editTextTelefonNo);
         kanGrubuEditText = findViewById(R.id.editTextKanGrubu);
+        isUserSwitch = findViewById(R.id.isUser);
         auth = new Auth();
         fireStore = new FireStore();
+        isUser = true;
 
         kayitOlButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,7 +52,23 @@ public class KayitOl extends AppCompatActivity {
                 onAuthStateChanged(savedInstanceState);
             }
         });
+        isUserSwitch.setChecked(isUser);
+        isUserSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    isUser = true;
+                    System.out.println(isUser);
+
+                } else {
+                    isUser = false;
+                    System.out.println(isUser);
+                }
+            }
+        });
+
     }
+
 
     private void createUserWithEmailAndPassword(String email, String password){
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
@@ -65,7 +89,7 @@ public class KayitOl extends AppCompatActivity {
     }
 
     private  void setUserInfos(String userUid){
-        fireStore.setUserInfos(userUid,nameEditText.getText().toString(), phoneEditText.getText().toString(),emailEditText.getText().toString(), passwordEditText.getText().toString(), kanGrubuEditText.getText().toString(), true);
+        fireStore.setUserInfos(userUid,nameEditText.getText().toString(), phoneEditText.getText().toString(),emailEditText.getText().toString(), passwordEditText.getText().toString(), kanGrubuEditText.getText().toString(), isUser);
     }
     private  void onAuthStateChanged(Bundle options){
         FirebaseAuth.AuthStateListener mAuthStateListener = auth.mAuthStateListener(KayitOl.this, Kullanici.class, options);
