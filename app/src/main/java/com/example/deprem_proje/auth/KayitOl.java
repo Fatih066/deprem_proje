@@ -12,6 +12,7 @@ import android.widget.Switch;
 
 import com.example.deprem_proje.Firabase.Auth;
 import com.example.deprem_proje.Firabase.FireStore;
+import com.example.deprem_proje.Firabase.RealtimeDatabase;
 import com.example.deprem_proje.Kullanici.Kullanici;
 import com.example.deprem_proje.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,6 +27,7 @@ public class KayitOl extends AppCompatActivity {
     private Auth auth;
     private Switch isUserSwitch;
     private boolean isUser;
+    private RealtimeDatabase realtimeDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +44,7 @@ public class KayitOl extends AppCompatActivity {
         auth = new Auth();
         fireStore = new FireStore();
         isUser = true;
+        realtimeDatabase = new RealtimeDatabase();
 
         kayitOlButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,11 +61,8 @@ public class KayitOl extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     isUser = true;
-                    System.out.println(isUser);
-
                 } else {
                     isUser = false;
-                    System.out.println(isUser);
                 }
             }
         });
@@ -75,18 +75,17 @@ public class KayitOl extends AppCompatActivity {
             if (task.isSuccessful()){
                 FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-
                 if(user != null){
                     String uid = user.getUid();
                     setUserInfos(uid);
+                    realtimeDatabase.setUserId(uid,nameEditText.getText().toString(), phoneEditText.getText().toString(),emailEditText.getText().toString(), passwordEditText.getText().toString(), kanGrubuEditText.getText().toString());
                 }else{
-                    System.out.println("user yok");
                 }
             }else{
-                System.out.println("başarısız");
             }
         });
     }
+
 
     private  void setUserInfos(String userUid){
         fireStore.setUserInfos(userUid,nameEditText.getText().toString(), phoneEditText.getText().toString(),emailEditText.getText().toString(), passwordEditText.getText().toString(), kanGrubuEditText.getText().toString(), isUser);

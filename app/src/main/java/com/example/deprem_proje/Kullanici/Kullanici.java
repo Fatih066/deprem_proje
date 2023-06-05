@@ -7,27 +7,26 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.example.deprem_proje.Firabase.RealtimeDatabase;
+import com.example.deprem_proje.Message.ChatFragment;
 import com.example.deprem_proje.Firabase.FireStore;
-import com.example.deprem_proje.Kullanici.Fragments.ChatFragment;
 import com.example.deprem_proje.Kullanici.Fragments.HomeFragment;
 import com.example.deprem_proje.Location.GetLocation;
-import com.example.deprem_proje.MainActivity;
+import com.example.deprem_proje.Model.User;
 import com.example.deprem_proje.R;
 import com.example.deprem_proje.Firabase.Auth;
-import com.example.deprem_proje.Yetkili.UserInfo.UserInfoActivity;
 import com.example.deprem_proje.databinding.ActivityKullaniciBinding;
 import com.example.deprem_proje.publicFunctions.PublicFunctions;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.OnMapReadyCallback;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Kullanici extends AppCompatActivity    {
 
@@ -40,6 +39,8 @@ public class Kullanici extends AppCompatActivity    {
     private String date;
     private Toolbar toolbar;
     private  Bundle options;
+    private RealtimeDatabase realtimeDatabase;
+    private List<User> mUsers;
 
 
     @Override
@@ -63,7 +64,7 @@ public class Kullanici extends AppCompatActivity    {
 
         setViews();
         options = savedInstanceState;
-
+        realtimeDatabase.getUsers(auth.getUser().getUid(), mUsers);
     }
 
 
@@ -76,7 +77,8 @@ public class Kullanici extends AppCompatActivity    {
         fireStore = new FireStore();
         getLocation = new GetLocation(this, this);
         isSafe = true;
-
+        mUsers = new ArrayList<>();
+        realtimeDatabase = new RealtimeDatabase();
     }
 
     private void signOut() {
@@ -97,7 +99,6 @@ public class Kullanici extends AppCompatActivity    {
 
     public void guvendeyim(View view) {
         date = publicFunctions.getCurrenDate();
-
         isSafe = true;
        fireStore.removeUserLocation(auth.getUser().getUid(), isSafe, date);
     }

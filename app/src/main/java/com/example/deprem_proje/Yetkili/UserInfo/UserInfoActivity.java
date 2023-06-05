@@ -1,5 +1,7 @@
 package com.example.deprem_proje.Yetkili.UserInfo;
 
+import static java.security.AccessController.getContext;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -9,8 +11,14 @@ import android.widget.TextView;
 
 import com.example.deprem_proje.Firabase.Auth;
 import com.example.deprem_proje.Firabase.FireStore;
+import com.example.deprem_proje.Message.MessageActivity;
 import com.example.deprem_proje.R;
 import com.example.deprem_proje.publicFunctions.PublicFunctions;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Map;
 
 public class UserInfoActivity extends AppCompatActivity {
 
@@ -24,6 +32,7 @@ public class UserInfoActivity extends AppCompatActivity {
     private Intent intent;
     private FireStore fireStore;
     private PublicFunctions publicFunctions;
+    private Auth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,13 +50,20 @@ public class UserInfoActivity extends AppCompatActivity {
         btnKurtarildi.setOnClickListener(v -> {
             fireStore.removeUserLocation(uid, true, publicFunctions.getCurrenDate());
         });
+        btnMesajAt.setOnClickListener(v -> {
+            Intent intent = new Intent(this, MessageActivity.class);
+            intent.putExtra("recieverUid", uid);
+            startActivity(intent);
+        });
     }
+
 
 
     private void setViews(){
         intent = getIntent();
         getUserInfo = new GetUserInfo();
         fireStore = new FireStore();
+        auth = new Auth();
         publicFunctions = new PublicFunctions();
         txtAdSoyad = findViewById(R.id.txtAdSoyad);
         txtEmail = findViewById(R.id.txtEmail);
@@ -56,4 +72,5 @@ public class UserInfoActivity extends AppCompatActivity {
         btnKurtarildi = findViewById(R.id.btnKurtarildi);
         btnMesajAt = findViewById(R.id.btnMesaj);
     }
+
 }

@@ -42,6 +42,7 @@ public class YetkiliHomeFragment extends Fragment implements  OnMapReadyCallback
         getLocation.deneme(markerOptions -> {
             for (MarkerOptions markerOption : markerOptions) {
                 map.addMarker(markerOption);
+                System.out.println(markerOption.getTitle());
             }
         });
 

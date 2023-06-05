@@ -11,16 +11,24 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.deprem_proje.Firabase.RealtimeDatabase;
+import com.example.deprem_proje.Message.ChatFragment;
 import com.example.deprem_proje.Firabase.Auth;
-import com.example.deprem_proje.Kullanici.Fragments.ChatFragment;
-import com.example.deprem_proje.Kullanici.Fragments.HomeFragment;
 import com.example.deprem_proje.Kullanici.Kullanici;
+import com.example.deprem_proje.Model.User;
 import com.example.deprem_proje.R;
 
 import com.example.deprem_proje.Yetkili.Fragments.YetkiliHomeFragment;
-import com.example.deprem_proje.databinding.ActivityKullaniciBinding;
 import com.example.deprem_proje.databinding.ActivityYetkiliBinding;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Yetkili extends AppCompatActivity  {
 
@@ -30,6 +38,8 @@ public class Yetkili extends AppCompatActivity  {
     private  Bundle options;
     private Auth auth;
     private ActivityYetkiliBinding binding;
+    private List<User> mUsers;
+    private RealtimeDatabase realtimeDatabase;
 
 
 
@@ -55,6 +65,10 @@ public class Yetkili extends AppCompatActivity  {
         setSupportActionBar(toolbar);
         options = savedInstanceState;
         auth = new Auth();
+        mUsers = new ArrayList<>();
+        realtimeDatabase = new RealtimeDatabase();
+        realtimeDatabase.getUsers(auth.getUser().getUid(), mUsers);
+
     }
 
 
@@ -73,6 +87,7 @@ public class Yetkili extends AppCompatActivity  {
         }
         return true;
     }
+
 
 
     private void signOut() {
