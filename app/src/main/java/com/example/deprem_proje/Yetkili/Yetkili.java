@@ -1,72 +1,108 @@
 package com.example.deprem_proje.Yetkili;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
-import android.location.Location;
 import android.os.Bundle;
-import android.widget.Button;
+import android.view.Menu;
+import android.view.MenuItem;
 
-import com.example.deprem_proje.Firabase.FireStore;
+import com.example.deprem_proje.Firabase.RealtimeDatabase;
+import com.example.deprem_proje.Message.ChatFragment;
+import com.example.deprem_proje.Firabase.Auth;
+import com.example.deprem_proje.Kullanici.Kullanici;
+import com.example.deprem_proje.Model.User;
 import com.example.deprem_proje.R;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
+
+import com.example.deprem_proje.Yetkili.Fragments.YetkiliHomeFragment;
+import com.example.deprem_proje.databinding.ActivityYetkiliBinding;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Yetkili extends AppCompatActivity {
+public class Yetkili extends AppCompatActivity  {
 
-    private FireStore fireStore ;
-    FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-    private Button btnDeneme;
+
+
+    private Toolbar toolbar;
+    private  Bundle options;
+    private Auth auth;
+    private ActivityYetkiliBinding binding;
+    private List<User> mUsers;
+    private RealtimeDatabase realtimeDatabase;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_yetkili);
-        btnDeneme = findViewById(R.id.btnDeneme);
-        fireStore = new FireStore();
-        btnDeneme.setOnClickListener(v -> {
-            getLocation(locations -> {
+        binding = ActivityYetkiliBinding.inflate(getLayoutInflater());
 
-            });
-        });
-    }
+        setContentView(binding.getRoot());
+        replaceFragment(new YetkiliHomeFragment());
 
-    public void getUids(DataUidCallback callback) {
-        List<String> userUids = new ArrayList<>();
-        fireStore.taskUid().addOnSuccessListener(queryDocumentSnapshots -> {
-            List<DocumentSnapshot> userSnapshot = queryDocumentSnapshots.getDocuments();
-            for (DocumentSnapshot document : userSnapshot) {
-                String documentId = document.getId();
-                userUids.add(documentId);
+        binding.yetkiliBottomNavigationView.setBackground(null);
+        binding.yetkiliBottomNavigationView.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.home) {
+                replaceFragment(new YetkiliHomeFragment());
+            } else if (itemId == R.id.chat) {
+                replaceFragment(new ChatFragment());
             }
-            callback.onDataReceived(userUids); // Veri alındığında geri çağırma mekanizması ile devam edilir
+            return true;
         });
-    }
-    public void getLocation(DataLocationCallback callback){
-        List<Location> locations = new ArrayList<>();
-        getUids(uids -> {
-            for (String uid:uids) {
-                firebaseFirestore.collection("Users").document(uid).collection("Konumum")
-                        .document("Konumum").get()
-                        .addOnSuccessListener(documentSnapshot -> {
-                            double lat = Double.parseDouble(documentSnapshot.getData().get("latitude").toString());
-                            double lon = Double.parseDouble(documentSnapshot.getData().get("longitude").toString());
-                            Location location = new Location("");
-                             location.setLatitude(lat);
-                             location.setLongitude(lon);
-                           locations.add(location);
-                           callback.onDataReceived(locations);
-                        });
-            }
-        });
-    }
-    public interface DataLocationCallback {
-        void onDataReceived(List<Location> locations);
-    }
-    public interface DataUidCallback {
-        void onDataReceived(List<String> uids);
+        toolbar = findViewById(R.id.appBar);
+        setSupportActionBar(toolbar);
+        options = savedInstanceState;
+        auth = new Auth();
+        mUsers = new ArrayList<>();
+        realtimeDatabase = new RealtimeDatabase();
+        realtimeDatabase.getUsers(auth.getUser().getUid(), mUsers);
+
     }
 
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.appbar_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.signOut) {
+            signOut();
+            onAuthStateChanged(options);
+        }
+        return true;
+    }
+
+
+
+    private void signOut() {
+        auth.signOut();
+    }
+
+    private void onAuthStateChanged(Bundle options) {
+        FirebaseAuth.AuthStateListener mAuthStateListener = auth.mAuthStateListener(this, Kullanici.class, options);
+        mAuthStateListener.onAuthStateChanged(auth._firebaseAuth);
+    }
+
+    private void replaceFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.yetkili_frame_layout, fragment);
+        fragmentTransaction.commit();
+    }
 }
