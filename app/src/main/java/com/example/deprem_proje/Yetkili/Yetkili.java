@@ -103,6 +103,8 @@ public class Yetkili extends AppCompatActivity  {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.yetkili_frame_layout, fragment);
+        fragmentTransaction.addToBackStack(null);
+
         fragmentTransaction.commit();
     }
 }
