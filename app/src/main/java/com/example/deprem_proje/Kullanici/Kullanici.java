@@ -73,7 +73,9 @@ public class Kullanici extends AppCompatActivity    {
 
         auth = new Auth();
         toolbar = findViewById(R.id.appBar);
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
+
         fireStore = new FireStore();
         getLocation = new GetLocation(this, this);
         isSafe = true;

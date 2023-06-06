@@ -9,7 +9,7 @@
         android:id="@+id/guvendeyim"
         android:layout_width="0dp"
         android:layout_height="100dp"
-        android:layout_marginTop="75dp"
+
 
         android:background="@drawable/rounded_green_background"
         android:clickable="true"
@@ -51,7 +51,6 @@
         android:layout_width="0dp"
         android:layout_height="100dp"
 
-        android:layout_marginTop="75dp"
         android:background="@drawable/rounded_red_background"
         android:clickable="true"
         android:focusable="true"

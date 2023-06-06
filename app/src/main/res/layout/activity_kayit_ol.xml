@@ -115,7 +115,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="50dp"
         android:layout_marginTop="10dp"
-        android:text="dfssdf"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextPassword" />
 
@@ -125,24 +124,8 @@
         android:layout_height="50dp"
         android:layout_marginStart="50dp"
         android:layout_marginTop="10dp"
-        android:text="Switch"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/errorMessage" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="150dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="50dp"
-        android:layout_marginBottom="58dp"
         android:text="Kullanıcı mısın?"
-        android:textColor="@color/black"
-        android:textSize="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/buttonRegister"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/isUser"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/errorMessage" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
